@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies (if any)
         run: |
           pip install --upgrade pip
-          # pip install -r requirements.txt  # uncomment if you have dependencies
+          pip install dnspython
 
       - name: Run DNS Fetcher script
         run: python DNS_Fetcher.py
