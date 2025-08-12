@@ -1,7 +1,9 @@
-name: Run DNS Fetcher
+name: Run DNS Fetcher Script
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
@@ -16,12 +18,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
-      - name: Install dependencies (if any)
+      - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install dnspython
+          pip install dnspython requests
 
       - name: Run DNS Fetcher script
         run: python DNS_Fetcher.py
