@@ -1,0 +1,43 @@
+import dns.resolver
+import requests
+from datetime import datetime
+
+# Domain to check
+domain = "example.com"
+
+# DNS record types to fetch
+record_types = ["A", "AAAA", "MX", "NS", "TXT"]
+
+# Store results
+results = {}
+
+print(f"Fetching DNS records for: {domain}")
+for rtype in record_types:
+    try:
+        answers = dns.resolver.resolve(domain, rtype)
+        results[rtype] = [str(rdata) for rdata in answers]
+    except Exception as e:
+        results[rtype] = [f"Error: {e}"]
+
+# Generate HTML report
+html_content = f"""
+<html>
+<head><title>DNS Report for {domain}</title></head>
+<body>
+<h1>DNS Report for {domain}</h1>
+<p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+<table border="1" cellpadding="5">
+<tr><th>Record Type</th><th>Values</th></tr>
+"""
+for rtype, values in results.items():
+    html_content += f"<tr><td>{rtype}</td><td>{'<br>'.join(values)}</td></tr>"
+html_content += """
+</table>
+</body>
+</html>
+"""
+
+with open("report.html", "w") as f:
+    f.write(html_content)
+
+print("DNS report saved as report.html")
