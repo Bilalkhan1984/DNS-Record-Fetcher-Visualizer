@@ -1,9 +1,19 @@
 import dns.resolver
 import requests
 from datetime import datetime
+import argparse
 
-# Domain to check
-domain = "example.com"
+# Argument parser
+parser = argparse.ArgumentParser(description="Fetch DNS records for a given domain.")
+parser.add_argument(
+    "--domain",
+    required=True,
+    help="Domain name to fetch DNS records for (e.g., example.com)"
+)
+args = parser.parse_args()
+
+# Domain from CLI
+domain = args.domain
 
 # DNS record types to fetch
 record_types = ["A", "AAAA", "MX", "NS", "TXT"]
