@@ -1,33 +1,47 @@
-name: DNS Record Fetcher
+import dns.resolver
+from datetime import datetime
+import argparse
 
-on:
-  workflow_dispatch:   # allows manual run
-  push:
-    branches: [ "main" ]
+# Argument parser
+parser = argparse.ArgumentParser(description="Fetch DNS records for a given domain")
+parser.add_argument("--domain", required=True, help="Domain name (e.g., example.com)")
+args = parser.parse_args()
 
-jobs:
-  fetch-dns:
-    runs-on: ubuntu-latest
+domain = args.domain
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+# DNS record types to fetch
+record_types = ["A", "AAAA", "MX", "NS", "TXT"]
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+# Store results
+results = {}
 
-      - name: Install dependencies
-        run: |
-          pip install dnspython
+print(f"Fetching DNS records for: {domain}")
+for rtype in record_types:
+    try:
+        answers = dns.resolver.resolve(domain, rtype)
+        results[rtype] = [str(rdata) for rdata in answers]
+    except Exception as e:
+        results[rtype] = [f"Error: {e}"]
 
-      - name: Run DNS fetcher
-        run: |
-          python dns_fetcher.py
+# Generate HTML report
+html_content = f"""
+<html>
+<head><title>DNS Report for {domain}</title></head>
+<body>
+<h1>DNS Report for {domain}</h1>
+<p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+<table border="1" cellpadding="5">
+<tr><th>Record Type</th><th>Values</th></tr>
+"""
+for rtype, values in results.items():
+    html_content += f"<tr><td>{rtype}</td><td>{'<br>'.join(values)}</td></tr>"
+html_content += """
+</table>
+</body>
+</html>
+"""
 
-      - name: Upload report
-        uses: actions/upload-artifact@v3
-        with:
-          name: dns-report
-          path: report.html
+with open("report.html", "w") as f:
+    f.write(html_content)
+
+print("✅ DNS report saved as report.html")
