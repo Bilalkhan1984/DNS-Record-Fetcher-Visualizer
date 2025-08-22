@@ -30,7 +30,7 @@ jobs:
 
       # Run DNS Fetcher script
       - name: Run DNS Fetcher
-        run: python ./scripts/Dns_Fetcher.py --domain "google.com"
+        run: python Dns_Fetcher.py --domain "google.com"
 
 
       # Move generated report into docs folder
