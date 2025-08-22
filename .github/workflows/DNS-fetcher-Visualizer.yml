@@ -3,7 +3,7 @@ name: DNS Record Fetcher
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:  # Allows manual run
+  workflow_dispatch:
 
 jobs:
   fetch-dns:
@@ -24,11 +24,6 @@ jobs:
       - name: Run DNS fetcher
         run: |
           python Dns_Fetcher.py --domain "google.com"
-
-      - name: Move report to docs folder
-        run: |
-          mkdir -p docs
-          mv report.html docs/index.html
 
       - name: Commit report to docs
         run: |
