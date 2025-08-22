@@ -1,15 +1,21 @@
 import dns.resolver
 from datetime import datetime
 import argparse
+import os
 
 # Argument parser
-parser = argparse.ArgumentParser(description="Fetch DNS records for a given domain")
-parser.add_argument("--domain", required=True, help="Domain name (e.g., example.com)")
+parser = argparse.ArgumentParser(description="Fetch DNS records for a given domain.")
+parser.add_argument(
+    "--domain",
+    required=True,
+    help="Domain name to fetch DNS records for (e.g., example.com)"
+)
 args = parser.parse_args()
 
+# Domain from CLI
 domain = args.domain
 
-# DNS record types to fetch
+# DNS record types
 record_types = ["A", "AAAA", "MX", "NS", "TXT"]
 
 # Store results
@@ -23,7 +29,11 @@ for rtype in record_types:
     except Exception as e:
         results[rtype] = [f"Error: {e}"]
 
-# Generate HTML report
+# Filename with timestamp
+timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+report_file = f"report-{timestamp}.html"
+
+# HTML content
 html_content = f"""
 <html>
 <head><title>DNS Report for {domain}</title></head>
@@ -33,15 +43,18 @@ html_content = f"""
 <table border="1" cellpadding="5">
 <tr><th>Record Type</th><th>Values</th></tr>
 """
+
 for rtype, values in results.items():
     html_content += f"<tr><td>{rtype}</td><td>{'<br>'.join(values)}</td></tr>"
+
 html_content += """
 </table>
 </body>
 </html>
 """
 
-with open("report.html", "w") as f:
+# Save report
+with open(report_file, "w") as f:
     f.write(html_content)
 
-print("✅ DNS report saved as report.html")
+print(f"✅ DNS report saved as {report_file}")
