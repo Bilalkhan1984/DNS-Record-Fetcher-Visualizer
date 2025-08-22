@@ -4,6 +4,11 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      domain:
+        description: "Domain name to fetch DNS records for"
+        required: true
+        default: "google.com"
 
 jobs:
   fetch-dns:
@@ -23,12 +28,12 @@ jobs:
 
       - name: Run DNS fetcher
         run: |
-          python Dns_Fetcher.py --domain "google.com"
+          python Dns_Fetcher.py --domain "${{ github.event.inputs.domain }}"
 
       - name: Commit report to docs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/index.html
-          git commit -m "Update DNS report"
+          git commit -m "Update DNS report for ${{ github.event.inputs.domain }}"
           git push
