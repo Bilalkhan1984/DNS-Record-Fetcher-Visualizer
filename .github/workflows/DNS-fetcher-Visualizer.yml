@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: pip install dnspython
 
-      - name: Run DNS Fetcher
-        run: python ./Dns_Fetcher.py --domain "google.com"
+     - name: Run DNS Fetcher
+       run: python Dns_Fetcher.py --domain "google.com"
 
       - name: Move report to docs
         run: |
