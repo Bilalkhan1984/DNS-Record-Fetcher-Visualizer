@@ -1,17 +1,14 @@
-name: DNS Record Fetcher
+name: DNS Fetcher CI
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
-    inputs:
-      domain:
-        description: "Domain name to fetch DNS records for"
-        required: true
-        default: "google.com"
 
 jobs:
-  fetch-dns:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,20 +17,21 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          pip install dnspython
+        run: pip install dnspython
 
-      - name: Run DNS fetcher
-        run: |
-          python Dns_Fetcher.py --domain "${{ github.event.inputs.domain }}"
+      - name: Run DNS Fetcher
+        run: python ./Dns_Fetcher.py --domain "google.com"
 
-      - name: Commit report to docs
+      - name: Move report to docs
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html
-          git commit -m "Update DNS report for ${{ github.event.inputs.domain }}"
-          git push
+          mkdir -p docs
+          mv report.html docs/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dns-report
+          path: docs/index.html
