@@ -1,6 +1,7 @@
 import dns.resolver
 from datetime import datetime
 import argparse
+import os
 
 # Argument parser
 parser = argparse.ArgumentParser(description="Fetch DNS records for a given domain.")
@@ -11,7 +12,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Domain from CLI
 domain = args.domain
 
 # DNS record types to fetch
@@ -27,6 +27,9 @@ for rtype in record_types:
         results[rtype] = [str(rdata) for rdata in answers]
     except Exception as e:
         results[rtype] = [f"Error: {e}"]
+
+# Make sure docs folder exists
+os.makedirs("docs", exist_ok=True)
 
 # Generate HTML report
 html_content = f"""
@@ -46,7 +49,7 @@ html_content += """
 </html>
 """
 
-with open("report.html", "w") as f:
+with open("docs/index.html", "w") as f:
     f.write(html_content)
 
-print("✅ DNS report saved as report.html")
+print("✅ DNS report saved as docs/index.html")
