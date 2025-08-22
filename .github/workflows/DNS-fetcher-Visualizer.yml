@@ -3,17 +3,17 @@ name: DNS Record Fetcher
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:  # Allows manual run
+  workflow_dispatch:
 
 jobs:
   fetch-dns:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -23,10 +23,10 @@ jobs:
 
       - name: Run DNS fetcher
         run: |
-          python Dns_Fetcher.py --domain "google.com"
+          python DNS_Fetcher.py --domain "google.com"
 
       - name: Upload report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: dns-report
           path: report.html
