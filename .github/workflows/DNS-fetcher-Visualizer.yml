@@ -1,8 +1,9 @@
-- name: Run DNS fetcher
-  run: python DNS-Record-Fetcher-Visualizer/dns_fetcher.py --domain "google.com"
-  
+name: DNS Record Fetcher
+
 on:
-  workflow_dispatch:  # Run manually
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # Allows manual run
 
 jobs:
   fetch-dns:
@@ -17,40 +18,15 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install dnspython
+        run: |
+          pip install dnspython
 
       - name: Run DNS fetcher
-        run: python dns_fetcher.py --domain "google.com"
+        run: |
+          python Dns_Fetcher.py --domain "google.com"
 
-      - name: Upload artifact for Pages
+      - name: Upload report
         uses: actions/upload-artifact@v4
         with:
           name: dns-report
           path: report.html
-
-  deploy:
-    needs: fetch-dns
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dns-report
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
