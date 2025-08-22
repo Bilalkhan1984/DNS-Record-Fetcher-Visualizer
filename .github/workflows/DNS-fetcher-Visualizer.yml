@@ -1,5 +1,6 @@
-name: DNS Report Generator
-
+- name: Run DNS fetcher
+  run: python DNS-Record-Fetcher-Visualizer/dns_fetcher.py --domain "google.com"
+  
 on:
   workflow_dispatch:  # Run manually
 
