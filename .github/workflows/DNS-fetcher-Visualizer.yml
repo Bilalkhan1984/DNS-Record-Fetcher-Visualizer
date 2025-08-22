@@ -9,28 +9,41 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   fetch-dns:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: |
-          pip install dnspython
+        run: pip install dnspython
 
       - name: Run DNS fetcher
-        run: |
-          python dns_fetcher.py --domain "${{ github.event.inputs.domain }}"
+        run: python dns_fetcher.py --domain "${{ github.event.inputs.domain }}"
 
-      - name: Upload report
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: dns-report
-          path: report.html
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: fetch-dns
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
