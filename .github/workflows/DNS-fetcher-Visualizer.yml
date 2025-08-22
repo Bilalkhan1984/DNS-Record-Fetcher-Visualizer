@@ -1,4 +1,5 @@
-name: DNS Record Fetcher CI
+- name: List repo files
+  run: ls -R
 
 on:
   push:
