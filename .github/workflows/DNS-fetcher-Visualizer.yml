@@ -3,14 +3,14 @@ name: DNS Record Fetcher
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual run
 
 jobs:
   fetch-dns:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,10 +23,17 @@ jobs:
 
       - name: Run DNS fetcher
         run: |
-          python DNS_Fetcher.py --domain "google.com"
-          
-          - name: Upload report
-  uses: actions/upload-artifact@v4
-  with:
-    name: dns-report
-    path: report.html
+          python Dns_Fetcher.py --domain "google.com"
+
+      - name: Move report to docs folder
+        run: |
+          mkdir -p docs
+          mv report.html docs/index.html
+
+      - name: Commit report to docs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Update DNS report"
+          git push
